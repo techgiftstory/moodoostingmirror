@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mood Boosting Mirror</title>
+
+<style>
+  body {
+    background: #fff6fb;
+    font-family: Arial;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    text-align:center;
+    padding:20px;
+  }
+  #msg {
+    font-size: 2rem;
+    color: #e60073;
+    font-weight: bold;
+  }
+</style>
+</head>
+
+<body>
+<h1 id="msg">Fetching your compliment...</h1>
+
+<script>
+async function getCompliment() {
+  try {
+    const res = await fetch("/api/compliment");
+    const data = await res.json();
+    const compliment = data.compliment;
+
+    document.getElementById("msg").innerText = compliment;
+
+    const utter = new SpeechSynthesisUtterance(compliment);
+    utter.rate = 1;
+    utter.pitch = 1;
+    speechSynthesis.speak(utter);
+
+  } catch (e) {
+    document.getElementById("msg").innerText = "Couldn't load compliment 😢";
+  }
+}
+
+getCompliment();
+</script>
+
+</body>
+</html>
