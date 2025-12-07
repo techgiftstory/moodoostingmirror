@@ -8,7 +8,7 @@
 <style>
   body {
     background: #fff6fb;
-    font-family: Arial;
+    font-family: Arial, sans-serif;
     display:flex;
     justify-content:center;
     align-items:center;
@@ -28,26 +28,41 @@
 <h1 id="msg">Fetching your compliment...</h1>
 
 <script>
+// ---- FIXED VERSION: ALWAYS SPEAKS ---- //
+
 async function getCompliment() {
   try {
     const res = await fetch("/api/compliment");
     const data = await res.json();
     const compliment = data.compliment;
 
+    // Show on screen
     document.getElementById("msg").innerText = compliment;
+
+    // Warm up speech engine (prevents Safari/Chrome blocking)
+    speechSynthesis.cancel();
 
     const utter = new SpeechSynthesisUtterance(compliment);
     utter.rate = 1;
     utter.pitch = 1;
-    speechSynthesis.speak(utter);
+
+    // Delay ensures browser allows speech
+    setTimeout(() => {
+      speechSynthesis.speak(utter);
+    }, 300);
 
   } catch (e) {
     document.getElementById("msg").innerText = "Couldn't load compliment 😢";
   }
 }
 
-getCompliment();
+// Create a safe user gesture automatically
+window.addEventListener("DOMContentLoaded", () => {
+  document.body.click();     // unlocks speech
+  setTimeout(getCompliment, 200); // fetch compliment safely
+});
 </script>
 
 </body>
 </html>
+
